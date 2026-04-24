@@ -19,7 +19,7 @@ def style_background_dashboard():
     st.markdown("""
         <style>
         .stApp {
-            background: #5865F2 !important;
+            background: #E0E3FF !important;
         }
         </style>
         """,
@@ -57,7 +57,7 @@ def style_base_layout():
         h3, h4, p {
             font-family: 'Outfit', sans-serif;
             color: white !important;    
-        }
+        }       
         button{
             border-radius: 1.5rem !important;
             background: #5865F2 !important;
@@ -83,11 +83,10 @@ def style_base_layout():
             padding: 10px 20px !important;
             border: none !important;
             transition: transform 0.25s ease-in-out !important;
-        }
-                
+        }  
         button:hover{
-            transform:scale(1.05)}        
-                
+            transform:scale(1.05)}
+                              
         </style>
         """,
         unsafe_allow_html=True
