@@ -9,3 +9,5 @@ bcrypt
 pillow
 segno
 streamlit
+librosa
+resemblyzer
