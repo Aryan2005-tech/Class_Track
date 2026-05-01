@@ -7,7 +7,7 @@ import dlib
 
 @st.cache_resource
 def load_dlib_models():
-    detector=dlib.frontal_face_detector()
+    detector=dlib.get_frontal_face_detector()
     sp=dlib.shape_predictor(
         face_recognition_models.pose_predictor_model_location()
     )
@@ -35,8 +35,8 @@ def get_trained_model():
     for student in student_db:
         embedding=student.get('face_embedding')
         if embedding:
-            X=X.append(np.array(embedding))
-            Y=Y.append(student.get('student_id')) 
+            X.append(np.array(embedding))
+            Y.append(student.get('student_id')) 
     if len(X)==0:
         return 0
     
