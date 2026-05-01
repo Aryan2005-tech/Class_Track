@@ -7,19 +7,21 @@ from src.components.dialog_attendance_results import show_attendance_result
 
 @st.dialog('Voice Attendance')
 def voice_attendance_dialog(selected_subject_id):
-    st.write('Record audio of students saying I am present. Then AI will recognize the students')
-
-    audio_data = None
+    st.write('Record audio of students saying "I am present". AI will recognize their voices.')
 
     audio_data = st.audio_input("Record classroom audio")
 
-    if st.button('Analyze Audio', width='stretch', type='primary'):
-        with st.spinner('Prcessing Audio data'):
+    if st.button('Analyze Audio', width='stretch', type='primary', icon=':material/mic:'):
+        if audio_data is None:
+            st.warning('Please record audio first before analyzing.')
+            return
+
+        with st.spinner('Processing audio data...'):
             enrolled_res = supabase.table('subject_students').select("*, students(*)").eq('subject_id', selected_subject_id).execute()
             enrolled_students = enrolled_res.data
 
             if not enrolled_students:
-                st.warning('No students enrolled in this course')
+                st.warning('No students enrolled in this course.')
                 return
 
             candidates_dict = {
@@ -28,10 +30,11 @@ def voice_attendance_dialog(selected_subject_id):
             }
 
             if not candidates_dict:
-                st.error('None Student with this Voice is Registered')
+                st.error('No students have registered their voice. Ask students to enroll with voice during registration.')
+                return
 
-            audio_bytes=audio_data.read()
-            detected_scores=process_bulk_audio(audio_bytes,candidates_dict)
+            audio_bytes = audio_data.read()
+            detected_scores = process_bulk_audio(audio_bytes, candidates_dict)
             results, attendance_to_log = [], []
 
             current_timestamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
@@ -44,7 +47,7 @@ def voice_attendance_dialog(selected_subject_id):
                 results.append({
                     "Name": student['name'],
                     "ID": student['student_id'],
-                    "Source": score if is_present else "-",
+                    "Confidence": f"{score:.2f}" if is_present else "-",
                     "Status": "✅ Present" if is_present else "❌ Absent"
                 })
 
@@ -54,7 +57,8 @@ def voice_attendance_dialog(selected_subject_id):
                     'timestamp': current_timestamp,
                     'is_present': bool(is_present)
                 })
-                st.session_state.voice_attendance_results = (pd.DataFrame(results), attendance_to_log)
+
+            st.session_state.voice_attendance_results = (pd.DataFrame(results), attendance_to_log)
 
     if st.session_state.get('voice_attendance_results'):
         st.divider()

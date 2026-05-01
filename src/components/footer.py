@@ -4,6 +4,6 @@ def footer_home():
 
     st.markdown(f"""
         <div style="margin-top:2rem; display:flex; gap:6px; justify-content:center; align-items:center">
-            <p style="font-weight:bold; color:white !important; margin:0;">Created by Aryan</p>
+            <p style="font-weight:800; color:white !important; margin:0; font-size:1.1rem; letter-spacing:0.05em;">Created by Aryan</p>
         </div>
         """, unsafe_allow_html=True)

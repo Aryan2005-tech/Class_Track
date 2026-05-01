@@ -1,8 +1,6 @@
 import streamlit as st
-from src.database.db import enroll_student_to_subject
-from src.database.config import supabase
-import time
 from src.database.db import create_attendance
+import time
 
 
 def show_attendance_result(df, logs):
@@ -12,23 +10,24 @@ def show_attendance_result(df, logs):
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button('Discard', width='stretch'):
-            st.session_state.voice_attendance_results=None
+        if st.button('Discard', width='stretch', icon=':material/delete:'):
+            st.session_state.voice_attendance_results = None
             st.session_state.attendance_images = []
             st.rerun()
 
     with col2:
-        if st.button('Confirm & Save', width='stretch', type='primary'):
+        if st.button('Confirm & Save', width='stretch', type='primary', icon=':material/check_circle:'):
             try:
                 create_attendance(logs)
-                st.toast("Attendance taken")
+                st.toast("Attendance saved successfully!", icon="✅")
                 st.session_state.attendance_images = []
-                st.session_state.voice_attendance_results=None
+                st.session_state.voice_attendance_results = None
+                time.sleep(1)
                 st.rerun()
             except Exception as e:
-                st.error('Sync failed!')
+                st.error(f'Failed to save attendance: {e}')
 
 
-@st.dialog("Attendance Reports")
+@st.dialog("Attendance Results")
 def attendance_result_dialog(df, logs):
     show_attendance_result(df, logs)

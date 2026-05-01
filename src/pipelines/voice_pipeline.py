@@ -1,5 +1,5 @@
 import librosa
-from resemblyzer import VoiceEncoder,preprocess_wav
+from resemblyzer import VoiceEncoder, preprocess_wav
 import io
 import streamlit as st
 import numpy as np
@@ -10,13 +10,13 @@ def load_voice_encoder():
 
 def get_voice_embedding(audio_bytes):
     try:
-        encoder=load_voice_encoder()
-        audio,sr=librosa.load(io.BytesIO(audio_bytes),sr=16000)
-        wav=preprocess_wav(audio)
-        embedding=encoder.embed_utterance(wav)
-        return embedding.to_list()
+        encoder = load_voice_encoder()
+        audio, sr = librosa.load(io.BytesIO(audio_bytes), sr=16000)
+        wav = preprocess_wav(audio)
+        embedding = encoder.embed_utterance(wav)
+        return embedding.tolist()
     except Exception as e:
-        st.error("Voice error occured")
+        st.error(f"Voice processing error: {e}")
         return None
 
 
@@ -48,18 +48,16 @@ def process_bulk_audio(audio_bytes, candidates_dict, threshold=0.65):
         identified_results = {}
 
         for start, end in segments:
-            if (end-start) < sr * 0.5:
+            if (end - start) < sr * 0.5:
                 continue
             segment_audio = audio[start:end]
             wav = preprocess_wav(segment_audio)
             embedding = encoder.embed_utterance(wav)
-            sid,score=identify_speaker(embedding,candidates_dict,threshold)
+            sid, score = identify_speaker(embedding, candidates_dict, threshold)
             if sid:
-                if sid not in identified_results or score>identified_results[sid]:
-                    identified_results[sid]=score
+                if sid not in identified_results or score > identified_results[sid]:
+                    identified_results[sid] = score
         return identified_results
     except Exception as e:
-        st.erro("Bulk Process error")
-        return {}    
-
-
+        st.error(f"Audio processing error: {e}")
+        return {}
